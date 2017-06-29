@@ -15,7 +15,8 @@ class MenuController
      puts "3 - Search for an entry"
      puts "4 - Import entries from a CSV"
      puts "5 - View entry by number"
-     puts "6 - Exit"
+     puts "6 - Nuke/delete all entries"
+     puts "7 - Exit"
      print "Enter your selection: "
  
      # #3
@@ -42,7 +43,12 @@ class MenuController
             system "clear"
             view_entry_by_n
             main_menu
-        when 6
+        when 6 
+            system "clear"
+            @address_book.nuke
+            puts "All entries have been deleted"
+            main_menu
+        when 7
             puts "Good-bye!"
             exit(0)
         else
@@ -112,11 +118,20 @@ class MenuController
        puts "Updated entry:"
        puts entry
    end
-
-
-       
    
    def search_entries
+       print "Search by name: "
+       name = gets.chomp
+       
+       match = address_book.binary_search(name)
+       system "clear"
+       
+       if match 
+           puts match.to_s
+           search_submenu(match)
+       else
+           puts "No match found for #{name}"
+       end
    end
    
    def read_csv
@@ -151,7 +166,10 @@ class MenuController
        case selection
         when "n"
         when "d"
+            delete_entry(entry)
         when "e"
+            edit_entry(entry)
+            entry_submenu(entry)
         when "m"
             system "clear"
             main_menu
@@ -161,5 +179,36 @@ class MenuController
             entry_submenu(entry)
             
         end
+    end
+    
+    def search_submenu(entry)
+        puts "\nd - delete entry"
+        puts "e - edit this entry"
+        puts "m - return to main menu"
+        
+        selection = gets.chomp
+        
+        case selection
+            when "d"
+                system "clear"
+                delete_entry(entry)
+                main_menu
+            when "e"
+                edit_entry(entry)
+                system "clear"
+                main_menu
+            when "m"
+                system "clear"
+                main_menu
+            else
+                system "clear"
+                puts "#{selection} is not a valid input"
+                puts entry.to_s
+                search_submenu(entry)
+            end
+        end
+    
+    def nuke
+        @entries = []
     end
 end
